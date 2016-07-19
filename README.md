@@ -32,6 +32,7 @@ eg config_PHE_fingertips_lape_DU.json
 
 -->
 
+```javascript
 {
     "url": "http://livews-a.phe.org.uk/GetDataDownload.ashx?pid=87&ati=101&res=87&tem=87&par=E92000001&pds=0&pat=6", 
     "sheet": "District & UA", 
@@ -41,9 +42,10 @@ eg config_PHE_fingertips_lape_DU.json
 	"profile": "Local Alcohol Profiles for England",
 	"download_version": ""
 }
+```
 
 You need to find the url for the xls download.
-The url is hidden, you have inspect the browser console from the download page for the path
+The url is hidden, you have to inspect the browser console from the download page for the path
 (The url usually does not change when they update the data.)
 
 
