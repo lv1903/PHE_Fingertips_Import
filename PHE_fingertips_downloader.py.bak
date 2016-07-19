@@ -1,0 +1,84 @@
+import sys
+
+# url = "http://livews-a.phe.org.uk/GetDataDownload.ashx?pid=55&ati=102&res=55&tem=55&par=E92000001&pds=0&pat=6"
+# output_path = "C:/dev/importerScripts/PHE _Data/" 
+# sheet = "County & UA"
+# required_indicators = ["Deprivation", "Under 75 mortality rate from non alcoholic liver disease (NAFLD)"]
+
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    import unicodedata
+    import re
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+    value = unicode(re.sub('[-\s]+', '-', value)) 
+    return value
+
+	
+def in_array(value, target_array):
+	return any(value in target for target in target_array)
+
+
+def download(url, sheet, required_indicators, output_path):
+		
+	import urllib2	
+	socket = urllib2.urlopen(url)
+	print("opened url")
+
+	import pandas as pd
+	xd = pd.ExcelFile(socket)
+	df = xd.parse(sheet)
+	"read sheet"
+	
+	indicators = pd.unique(df.Indicator.ravel())
+	if len(required_indicators) == 0:
+		required_indicators = indicators
+		
+	#check required indicators available
+	for indicator in required_indicators:
+		if in_array(indicator, indicators) == False:
+			print("required indicator missing from file: {}").format(indicator)
+	
+	
+	for indicator in indicators:
+	
+		if in_array(indicator, required_indicators) == True:
+			indicator_name = slugify(indicator)	
+			output_filepath = output_path + indicator_name + ".csv"	
+			selected_rows_df = df[df.Indicator.isin([indicator])]
+			selected_rows_df.to_csv(output_filepath, index = False)		
+			print(" read {}").format(indicator_name)
+			
+	print("finished")
+	
+"""----------------------------------------"""
+import argparse
+import json
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--generateConfig", "-g", help="generate a config file called config_PHE_fingertips.json", action="store_true")
+parser.add_argument("--configFile", "-c", help="path for config file")
+args = parser.parse_args()
+
+if args.generateConfig: 
+	obj = {	"url":"type/url/name/here.csv", 
+			"outPath":"leave blank for same dir as downloader",
+			"sheet":"sheet name",
+			"required_indicators":["indicator1", "indicator2", "etc", "or leave blank for all indicators"]
+	}
+	with open("config_PHE_fingertips.json", "w") as outfile:
+		json.dump(obj, outfile, indent=4)
+	sys.exit("config file generated")
+	
+if args.configFile == None:
+	args.configFile = "config_PHE_fingertips.json"
+	
+with open(args.configFile) as json_file:
+	oConfig = json.load(json_file)
+	print("read config file")
+				
+download(oConfig["url"], oConfig["sheet"], oConfig["required_indicators"], oConfig["output_path"])

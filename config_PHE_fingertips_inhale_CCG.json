@@ -1,0 +1,9 @@
+{
+    "url": "http://livews-a.phe.org.uk/GetDataDownload.ashx?pid=29&ati=19&res=29&tem=29&par=E92000001&pds=0&pat=46", 
+    "sheet": "CCG", 
+    "output_path": "C:/dev/PHE_Fingertips_Import_Process/", 
+	"output_filename": "output.json",
+    "required_indicators": [],
+	"profile": "Inhale - INteractive Health Atlas of Lung conditions in England",
+	"download_version": ""
+}
